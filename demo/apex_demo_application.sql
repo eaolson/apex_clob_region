@@ -13,7 +13,7 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_api.import_begin (
  p_version_yyyy_mm_dd=>'2013.01.01'
-,p_release=>'5.0.3.00.03'
+,p_release=>'5.0.4.00.12'
 ,p_default_workspace_id=>31149742542967907833
 ,p_default_application_id=>86025
 ,p_default_owner=>'EAO'
@@ -27,16 +27,17 @@ prompt APPLICATION 86025 - CLOB Region
 -- Application Export:
 --   Application:     86025
 --   Name:            CLOB Region
---   Date and Time:   20:45 Monday May 30, 2016
+--   Date and Time:   15:50 Sunday October 9, 2016
 --   Exported By:     EAOLSON@YAHOO.COM
 --   Flashback:       0
 --   Export Type:     Application Export
---   Version:         5.0.3.00.03
+--   Version:         5.0.4.00.12
 --   Instance ID:     63113759365424
 --
 
 -- Application Statistics:
 --   Pages:                      2
+--     Items:                    1
 --     Regions:                  3
 --   Shared Components:
 --     Logic:
@@ -103,7 +104,7 @@ wwv_flow_api.create_flow(
 ,p_rejoin_existing_sessions=>'N'
 ,p_csv_encoding=>'Y'
 ,p_last_updated_by=>'EAOLSON@YAHOO.COM'
-,p_last_upd_yyyymmddhh24miss=>'20160530204230'
+,p_last_upd_yyyymmddhh24miss=>'20161009154939'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_ui_type_name => null
 );
@@ -7785,7 +7786,7 @@ end;
 prompt --application/shared_components/plugins/region_type/org_halfabee_clobregion
 begin
 wwv_flow_api.create_plugin(
- p_id=>wwv_flow_api.id(34625956207600547891)
+ p_id=>wwv_flow_api.id(118072400913436320829)
 ,p_plugin_type=>'REGION TYPE'
 ,p_name=>'ORG.HALFABEE.CLOBREGION'
 ,p_display_name=>'CLOB Region'
@@ -7801,11 +7802,19 @@ wwv_flow_api.create_plugin(
 '    i                     PLS_INTEGER := 1;',
 '    l_chunk_sz            PLS_INTEGER := 8000;',
 '    l_clob                CLOB;',
-'    l_return apex_plugin.t_region_render_result;',
+'    l_column_value_list   apex_plugin_util.t_column_value_list2;',
+'    l_return              apex_plugin.t_region_render_result;',
 'BEGIN',
 '    apex_plugin_util.debug_region( p_plugin, p_region );',
 '    ',
-'    EXECUTE IMMEDIATE p_region.source INTO l_clob;',
+'    -- EXECUTE IMMEDIATE p_region.source INTO l_clob;',
+'    l_column_value_list := apex_plugin_util.get_data2(',
+'            p_sql_statement => p_region.source,',
+'            p_min_columns => 1,',
+'            p_max_columns => 1,',
+'            p_component_name => NULL',
+'    );',
+'    l_clob := l_column_value_list(1).value_list(1).clob_value;',
 '    ',
 '    WHILE i <= dbms_lob.getlength( l_clob ) LOOP',
 '        IF p_region.escape_output THEN',
@@ -7887,7 +7896,7 @@ wwv_flow_api.create_page(
 ,p_cache_timeout_seconds=>21600
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'EAOLSON@YAHOO.COM'
-,p_last_upd_yyyymmddhh24miss=>'20160530202900'
+,p_last_upd_yyyymmddhh24miss=>'20161009154939'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(34625615297278823841)
@@ -7912,9 +7921,10 @@ wwv_flow_api.create_page_plug(
 ,p_include_in_reg_disp_sel_yn=>'N'
 ,p_plug_display_point=>'BODY'
 ,p_plug_source=>wwv_flow_utilities.join(wwv_flow_t_varchar2(
-'SELECT clob001',
+'SELECT :P1_BV || clob001',
 '  FROM apex_collections',
-' WHERE collection_name = ''TEST_CLOB'''))
+' WHERE collection_name = ''TEST_CLOB''',
+'   AND :P1_BV IS NOT NULL'))
 ,p_plug_source_type=>'PLUGIN_ORG.HALFABEE.CLOBREGION'
 ,p_plug_query_row_template=>1
 ,p_plug_query_headings_type=>'QUERY_COLUMNS'
@@ -7922,6 +7932,23 @@ wwv_flow_api.create_page_plug(
 ,p_plug_query_num_rows_type=>'NEXT_PREVIOUS_LINKS'
 ,p_plug_query_show_nulls_as=>' - '
 ,p_pagination_display_position=>'BOTTOM_RIGHT'
+);
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(42393552229309406558)
+,p_name=>'P1_BV'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_api.id(34626010695610574638)
+,p_source=>'.'
+,p_source_type=>'STATIC'
+,p_display_as=>'NATIVE_HIDDEN'
+,p_cSize=>30
+,p_cMaxlength=>4000
+,p_cHeight=>1
+,p_label_alignment=>'RIGHT'
+,p_field_alignment=>'LEFT-CENTER'
+,p_item_template_options=>'#DEFAULT#'
+,p_lov_display_extra=>'YES'
+,p_attribute_01=>'Y'
 );
 end;
 /
@@ -7942,7 +7969,7 @@ wwv_flow_api.create_page(
 ,p_cache_mode=>'NOCACHE'
 ,p_help_text=>'No help is available for this page.'
 ,p_last_updated_by=>'EAOLSON@YAHOO.COM'
-,p_last_upd_yyyymmddhh24miss=>'20160530204210'
+,p_last_upd_yyyymmddhh24miss=>'20161009154939'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(34628624239689877197)
