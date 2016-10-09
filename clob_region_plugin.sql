@@ -13,9 +13,9 @@ whenever sqlerror exit sql.sqlcode rollback
 begin
 wwv_flow_api.import_begin (
  p_version_yyyy_mm_dd=>'2013.01.01'
-,p_release=>'5.0.3.00.03'
+,p_release=>'5.0.4.00.12'
 ,p_default_workspace_id=>31149742542967907833
-,p_default_application_id=>86025
+,p_default_application_id=>73353
 ,p_default_owner=>'EAO'
 );
 end;
@@ -28,7 +28,7 @@ end;
 prompt --application/shared_components/plugins/region_type/org_halfabee_clobregion
 begin
 wwv_flow_api.create_plugin(
- p_id=>wwv_flow_api.id(34625956207600547891)
+ p_id=>wwv_flow_api.id(75678767851996868870)
 ,p_plugin_type=>'REGION TYPE'
 ,p_name=>'ORG.HALFABEE.CLOBREGION'
 ,p_display_name=>'CLOB Region'
@@ -43,11 +43,19 @@ wwv_flow_api.create_plugin(
 '    i                     PLS_INTEGER := 1;',
 '    l_chunk_sz            PLS_INTEGER := 8000;',
 '    l_clob                CLOB;',
-'    l_return apex_plugin.t_region_render_result;',
+'    l_column_value_list   apex_plugin_util.t_column_value_list2;',
+'    l_return              apex_plugin.t_region_render_result;',
 'BEGIN',
 '    apex_plugin_util.debug_region( p_plugin, p_region );',
 '    ',
-'    EXECUTE IMMEDIATE p_region.source INTO l_clob;',
+'    -- EXECUTE IMMEDIATE p_region.source INTO l_clob;',
+'    l_column_value_list := apex_plugin_util.get_data2(',
+'            p_sql_statement => p_region.source,',
+'            p_min_columns => 1,',
+'            p_max_columns => 1,',
+'            p_component_name => NULL',
+'    );',
+'    l_clob := l_column_value_list(1).value_list(1).clob_value;',
 '    ',
 '    WHILE i <= dbms_lob.getlength( l_clob ) LOOP',
 '        IF p_region.escape_output THEN',
